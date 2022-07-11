@@ -1,10 +1,10 @@
 package com.codeflix.admin.video.catalog.application;
 
-import com.codeflix.admin.video.catalog.domain.Category;
+import com.codeflix.admin.video.catalog.domain.category.Category;
 
 public class UseCase {
 
     public Category execute() {
-        return new Category();
+        return Category.newCategory("movie", "description", true);
     }
 }
