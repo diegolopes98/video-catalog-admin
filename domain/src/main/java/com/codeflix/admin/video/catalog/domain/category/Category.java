@@ -1,6 +1,7 @@
 package com.codeflix.admin.video.catalog.domain.category;
 
 import com.codeflix.admin.video.catalog.domain.AggregateRoot;
+import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
 
 import java.time.Instant;
 
@@ -47,6 +48,11 @@ public class Category extends AggregateRoot<CategoryID> {
                 now,
                 null
         );
+    }
+
+    @Override
+    public void validate(final ValidationHandler handler) {
+        new CategoryValidator(this, handler).validate();
     }
 
     public CategoryID getId() {
