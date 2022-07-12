@@ -1,10 +1,6 @@
 package com.codeflix.admin.video.catalog.application;
 
-import com.codeflix.admin.video.catalog.domain.category.Category;
+public abstract class UseCase<IN, OUT> {
 
-public class UseCase {
-
-    public Category execute() {
-        return Category.newCategory("movie", "description", true);
-    }
+    public abstract OUT execute(IN anIn);
 }
