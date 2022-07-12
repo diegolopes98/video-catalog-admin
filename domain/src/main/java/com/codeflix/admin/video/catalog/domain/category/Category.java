@@ -56,6 +56,24 @@ public class Category extends AggregateRoot<CategoryID> {
         new CategoryValidator(this, handler).validate();
     }
 
+    public Category activate() {
+        final var now = Instant.now();
+        this.deletedAt = null;
+        this.active = true;
+        this.updatedAt = now;
+        return this;
+    }
+
+    public Category deactivate() {
+        final var now = Instant.now();
+        if (getDeletedAt() == null) {
+            this.deletedAt = now;
+        }
+        this.active = false;
+        this.updatedAt = now;
+        return this;
+    }
+
     public CategoryID getId() {
         return id;
     }
