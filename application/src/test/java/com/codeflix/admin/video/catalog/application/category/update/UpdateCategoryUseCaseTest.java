@@ -5,6 +5,7 @@ import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,11 @@ public class UpdateCategoryUseCaseTest {
 
     @Mock
     private CategoryGateway categoryGateway;
+
+    @BeforeEach
+    public void cleanUp() {
+        Mockito.reset(categoryGateway);
+    }
 
     @Test
     public void givenAValidCommand_whenCallsUpdateCategory_thenShouldReturnCategoryId() {
