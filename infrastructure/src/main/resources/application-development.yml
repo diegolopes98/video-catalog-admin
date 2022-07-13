@@ -1,3 +1,9 @@
+mysql:
+  username: root
+  password: 123456
+  schema: videos_adm
+  url: localhost:3306
+
 server:
   port: 8000
   undertow:
