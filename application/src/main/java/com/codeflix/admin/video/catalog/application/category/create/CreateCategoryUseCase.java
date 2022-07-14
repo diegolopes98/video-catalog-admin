@@ -5,5 +5,5 @@ import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationVa
 import io.vavr.control.Either;
 
 public abstract class CreateCategoryUseCase
-        extends UseCase<CreateCategoryCommand, Either<NotificationValidationHandler, CreateCategoryOutput>> {
+		extends UseCase<CreateCategoryCommand, Either<NotificationValidationHandler, CreateCategoryOutput>> {
 }

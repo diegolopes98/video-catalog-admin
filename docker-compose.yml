@@ -12,7 +12,7 @@ services:
     ports:
       - "3306:3306"
     networks:.
-      - videos_adm_network
+    - videos_adm_network
 
 networks:
   videos_adm_network:

@@ -8,16 +8,16 @@ import java.util.Objects;
 
 public class DefaultListCategoriesUseCase extends ListCategoriesUseCase {
 
-    private final CategoryGateway categoryGateway;
+	private final CategoryGateway categoryGateway;
 
-    public DefaultListCategoriesUseCase(final CategoryGateway categoryGateway) {
-        Objects.requireNonNull(categoryGateway);
-        this.categoryGateway = categoryGateway;
-    }
+	public DefaultListCategoriesUseCase(final CategoryGateway categoryGateway) {
+		Objects.requireNonNull(categoryGateway);
+		this.categoryGateway = categoryGateway;
+	}
 
-    @Override
-    public Pagination<CategoryListOutput> execute(final CategorySearchQuery aQuery) {
-        return this.categoryGateway.findAll(aQuery)
-                .map(CategoryListOutput::from);
-    }
+	@Override
+	public Pagination<CategoryListOutput> execute(final CategorySearchQuery aQuery) {
+		return this.categoryGateway.findAll(aQuery)
+				.map(CategoryListOutput::from);
+	}
 }

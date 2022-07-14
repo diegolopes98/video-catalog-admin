@@ -4,9 +4,9 @@ import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 
 public record UpdateCategoryOutput(
-        CategoryID id
+		CategoryID id
 ) {
-    public static UpdateCategoryOutput from (Category aCategory) {
-        return new UpdateCategoryOutput(aCategory.getId());
-    }
+	public static UpdateCategoryOutput from(Category aCategory) {
+		return new UpdateCategoryOutput(aCategory.getId());
+	}
 }
