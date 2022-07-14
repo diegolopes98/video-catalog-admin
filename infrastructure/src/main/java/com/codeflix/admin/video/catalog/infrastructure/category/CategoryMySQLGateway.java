@@ -7,9 +7,14 @@ import com.codeflix.admin.video.catalog.domain.category.CategorySearchQuery;
 import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+
+import static com.codeflix.admin.video.catalog.infrastructure.utils.SpecificationUtils.like;
 
 @Component
 public class CategoryMySQLGateway implements CategoryGateway {
@@ -35,8 +40,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
 	@Override
 	public Optional<Category> findById(final CategoryID anId) {
-		return this.repository.findById(anId.getValue())
-				.map(CategoryJpaEntity::toAggregate);
+		return this.repository.findById(anId.getValue()).map(CategoryJpaEntity::toAggregate);
 	}
 
 	@Override
@@ -45,8 +49,31 @@ public class CategoryMySQLGateway implements CategoryGateway {
 	}
 
 	@Override
-	public Pagination<Category> findAll(CategorySearchQuery aQuery) {
-		return null;
+	public Pagination<Category> findAll(final CategorySearchQuery aQuery) {
+		final var page = PageRequest.of(
+				aQuery.page(),
+				aQuery.perPage(),
+				Sort.by(Sort.Direction.fromString(aQuery.direction()), aQuery.sort())
+		);
+
+		final var specifications = Optional.ofNullable(aQuery.terms())
+				.filter(str -> !str.isBlank())
+				.map(str -> {
+					final Specification<CategoryJpaEntity> nameLike = like("name", str);
+					final Specification<CategoryJpaEntity> descriptionLike = like("description", str);
+					return nameLike.or(descriptionLike);
+				})
+				.orElse(null);
+
+		final var pageResult =
+				this.repository.findAll(Specification.where(specifications), page);
+
+		return new Pagination<>(
+				pageResult.getNumber(),
+				pageResult.getSize(),
+				pageResult.getTotalElements(),
+				pageResult.map(CategoryJpaEntity::toAggregate).stream().toList()
+		);
 	}
 
 	private Category save(final Category aCategory) {
