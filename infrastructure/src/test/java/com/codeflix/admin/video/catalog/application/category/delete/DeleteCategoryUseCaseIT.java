@@ -16,7 +16,8 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import java.util.Arrays;
 
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 
 @IntegrationTest
 public class DeleteCategoryUseCaseIT {
