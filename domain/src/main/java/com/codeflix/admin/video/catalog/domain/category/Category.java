@@ -4,6 +4,7 @@ import com.codeflix.admin.video.catalog.domain.AggregateRoot;
 import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Category extends AggregateRoot<CategoryID> {
@@ -39,7 +40,7 @@ public class Category extends AggregateRoot<CategoryID> {
 			final boolean isActive
 	) {
 		final var id = CategoryID.unique();
-		final var now = Instant.now();
+		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
 		final var deletedAt = isActive ? null : now;
 		return new Category(
 				id,
@@ -90,7 +91,7 @@ public class Category extends AggregateRoot<CategoryID> {
 	}
 
 	public Category activate() {
-		final var now = Instant.now();
+		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
 		this.deletedAt = null;
 		this.active = true;
 		this.updatedAt = now;
@@ -98,7 +99,7 @@ public class Category extends AggregateRoot<CategoryID> {
 	}
 
 	public Category deactivate() {
-		final var now = Instant.now();
+		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
 		if (getDeletedAt() == null) {
 			this.deletedAt = now;
 		}
@@ -115,7 +116,7 @@ public class Category extends AggregateRoot<CategoryID> {
 		}
 		this.name = aName;
 		this.description = aDescription;
-		this.updatedAt = Instant.now();
+		this.updatedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
 		return this;
 	}
 
