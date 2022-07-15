@@ -4,6 +4,7 @@ import com.codeflix.admin.video.catalog.IntegrationTest;
 import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,11 @@ public class CreateCategoryUseCaseIT {
 
 	@SpyBean
 	private CategoryGateway categoryGateway;
+
+	@BeforeEach
+	public void cleanup() {
+		Mockito.reset(categoryGateway);
+	}
 
 	@Test
 	public void givenAValidCommand_whenCallsCreateCategory_thenShouldReturnCategoryId() {
