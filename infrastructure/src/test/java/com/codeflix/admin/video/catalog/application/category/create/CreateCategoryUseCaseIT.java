@@ -17,7 +17,7 @@ import static org.mockito.Mockito.doThrow;
 public class CreateCategoryUseCaseIT {
 
 	@Autowired
-	private DefaultCreateCategoryUseCase useCase;
+	private CreateCategoryUseCase useCase;
 
 	@Autowired
 	private CategoryRepository repository;
