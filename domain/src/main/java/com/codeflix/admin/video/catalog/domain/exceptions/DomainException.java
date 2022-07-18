@@ -7,9 +7,9 @@ import java.util.List;
 public class DomainException extends NoStackTraceException {
 
 	private static final String MULTIPLE_ERRORS_MESSAGE = "the domain validation returned some errors";
-	private final List<Error> errors;
+	protected final List<Error> errors;
 
-	private DomainException(final String aMessage, final List<Error> anErrorList) {
+	protected DomainException(final String aMessage, final List<Error> anErrorList) {
 		super(aMessage);
 		this.errors = anErrorList;
 	}
