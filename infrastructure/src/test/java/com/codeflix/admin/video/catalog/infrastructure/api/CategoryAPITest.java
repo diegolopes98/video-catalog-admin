@@ -3,6 +3,7 @@ package com.codeflix.admin.video.catalog.infrastructure.api;
 import com.codeflix.admin.video.catalog.ControllerTest;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryUseCase;
+import com.codeflix.admin.video.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.CategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.codeflix.admin.video.catalog.application.category.update.UpdateCategoryOutput;
@@ -50,6 +51,9 @@ public class CategoryAPITest {
 
 	@MockBean
 	private UpdateCategoryUseCase updateCategoryUseCase;
+
+	@MockBean
+	private DeleteCategoryUseCase deleteCategoryUseCase;
 
 	@Test
 	public void givenAValidCommand_whenCallsCreateCategory_thenShouldReturnCategoryId() throws Exception {
@@ -345,5 +349,34 @@ public class CategoryAPITest {
 										&& Objects.equals(expectedIsActive, cmd.isActive())
 				)
 		);
+	}
+
+	@Test
+	public void givenAValidId_whenCallsDeleteCategory_thenShouldReturnNoContent() throws Exception {
+		final var expectedName = "Movies";
+		final var expectedDescription = "Movies Category";
+		final var expectedIsActive = true;
+
+		final var aCategory = Category
+				.newCategory(expectedName, expectedDescription, expectedIsActive);
+
+		final var expectedId = aCategory.getId().getValue();
+
+		doNothing()
+				.when(deleteCategoryUseCase)
+				.execute(expectedId);
+
+		final var request = MockMvcRequestBuilders
+				.delete("/categories/{id}", expectedId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON);
+
+		final var response = this.mvc.perform(request)
+				.andDo(print());
+
+		response.andExpectAll(
+				status().isNoContent()
+		);
+		verify(deleteCategoryUseCase, times(1)).execute(eq(expectedId));
 	}
 }
