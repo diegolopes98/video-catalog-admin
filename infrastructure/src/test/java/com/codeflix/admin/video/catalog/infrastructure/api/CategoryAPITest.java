@@ -6,16 +6,19 @@ import com.codeflix.admin.video.catalog.application.category.create.CreateCatego
 import com.codeflix.admin.video.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.CategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.codeflix.admin.video.catalog.application.category.retrieve.list.CategoryListOutput;
+import com.codeflix.admin.video.catalog.application.category.retrieve.list.ListCategoriesUseCase;
 import com.codeflix.admin.video.catalog.application.category.update.UpdateCategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.update.UpdateCategoryUseCase;
 import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
 import com.codeflix.admin.video.catalog.domain.exceptions.NotFoundException;
+import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
 import com.codeflix.admin.video.catalog.domain.validation.Error;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
-import com.codeflix.admin.video.catalog.infrastructure.category.models.CreateCategoryApiInput;
-import com.codeflix.admin.video.catalog.infrastructure.category.models.UpdateCategoryApiInput;
+import com.codeflix.admin.video.catalog.infrastructure.category.models.CreateCategoryRequest;
+import com.codeflix.admin.video.catalog.infrastructure.category.models.UpdateCategoryRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.List;
 import java.util.Objects;
 
 import static io.vavr.API.Left;
@@ -55,6 +59,9 @@ public class CategoryAPITest {
 	@MockBean
 	private DeleteCategoryUseCase deleteCategoryUseCase;
 
+	@MockBean
+	private ListCategoriesUseCase listCategoriesUseCase;
+
 	@Test
 	public void givenAValidCommand_whenCallsCreateCategory_thenShouldReturnCategoryId() throws Exception {
 		final var expectedName = "Movies";
@@ -62,7 +69,7 @@ public class CategoryAPITest {
 		final var expectedIsActive = true;
 
 		final var anInput =
-				new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+				new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		when(createCategoryUseCase.execute(any()))
 				.thenReturn(Right(CreateCategoryOutput.from(CategoryID.from("123").getValue())));
@@ -98,7 +105,7 @@ public class CategoryAPITest {
 		final var expectedMessage = "'name' should not be null";
 
 		final var anInput =
-				new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+				new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		when(createCategoryUseCase.execute(any()))
 				.thenReturn(Left(NotificationValidationHandler.create(new Error(expectedMessage))));
@@ -135,7 +142,7 @@ public class CategoryAPITest {
 		final var expectedMessage = "'name' should not be null";
 
 		final var anInput =
-				new CreateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+				new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		when(createCategoryUseCase.execute(any()))
 				.thenThrow(DomainException.with(new Error(expectedMessage)));
@@ -240,7 +247,7 @@ public class CategoryAPITest {
 		when(updateCategoryUseCase.execute(any()))
 				.thenReturn(Right(UpdateCategoryOutput.from(expectedId)));
 
-		final var input = new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+		final var input = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		final var request = MockMvcRequestBuilders
 				.put("/categories/{id}", expectedId)
@@ -280,7 +287,7 @@ public class CategoryAPITest {
 						CategoryID.from(expectedId)
 				));
 
-		final var input = new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+		final var input = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		final var request = MockMvcRequestBuilders
 				.put("/categories/{id}", expectedId)
@@ -324,7 +331,7 @@ public class CategoryAPITest {
 						)
 				);
 
-		final var input = new UpdateCategoryApiInput(expectedName, expectedDescription, expectedIsActive);
+		final var input = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		final var request = MockMvcRequestBuilders
 				.put("/categories/{id}", expectedId)
@@ -378,5 +385,66 @@ public class CategoryAPITest {
 				status().isNoContent()
 		);
 		verify(deleteCategoryUseCase, times(1)).execute(eq(expectedId));
+	}
+
+	@Test
+	public void givenAValidParam_whenCallsListCategories_thenShouldReturnCategories() throws Exception {
+		final var aCategory = Category.newCategory("Movies", null, true);
+		final var expectedPage = 0;
+		final var expectedPerPage = 10;
+		final var expectedTerms = "movies";
+		final var expectedSort = "description";
+		final var expectedDirection = "desc";
+		final var expectedItemsCount = 1;
+		final var expectedTotal = 1;
+
+		final var expectedItems = List.of(
+				CategoryListOutput.from(aCategory)
+		);
+
+		when(listCategoriesUseCase.execute(any()))
+				.thenReturn(new Pagination<>(
+						expectedPage,
+						expectedPerPage,
+						expectedTotal,
+						expectedItems
+				));
+
+		final var request = MockMvcRequestBuilders
+				.get("/categories")
+				.queryParam("page", String.valueOf(expectedPage))
+				.queryParam("perPage", String.valueOf(expectedPerPage))
+				.queryParam("sort", expectedSort)
+				.queryParam("dir", expectedDirection)
+				.queryParam("search", expectedTerms)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON);
+
+		final var response = this.mvc.perform(request)
+				.andDo(print());
+
+		response.andExpectAll(
+				status().isOk(),
+				jsonPath("$.current_page", equalTo(expectedPage)),
+				jsonPath("$.per_page", equalTo(expectedPerPage)),
+				jsonPath("$.total", equalTo(expectedTotal)),
+				jsonPath("$.items", hasSize(expectedItemsCount)),
+				jsonPath("$.items[0].id", equalTo(aCategory.getId().getValue())),
+				jsonPath("$.items[0].name", equalTo(aCategory.getName())),
+				jsonPath("$.items[0].description", equalTo(aCategory.getDescription())),
+				jsonPath("$.items[0].is_active", equalTo(aCategory.isActive())),
+				jsonPath("$.items[0].created_at", equalTo(aCategory.getCreatedAt().toString())),
+				jsonPath("$.items[0].deleted_at", equalTo(aCategory.getDeletedAt()))
+		);
+
+		verify(listCategoriesUseCase, times(1)).execute(
+				argThat(query ->
+								Objects.equals(expectedPage, query.page())
+										&& Objects.equals(expectedPerPage, query.perPage())
+										&& Objects.equals(expectedDirection, query.direction())
+										&& Objects.equals(expectedSort, query.sort())
+										&& Objects.equals(expectedTerms, query.terms())
+				)
+		);
 	}
 }
