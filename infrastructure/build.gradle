@@ -32,7 +32,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":application"))
 
-    implementation group: 'io.vavr', name: 'vavr', version: '0.10.4'
+    implementation('io.vavr:vavr:0.10.4')
 
     implementation('mysql:mysql-connector-java:8.0.29')
 
@@ -48,6 +48,7 @@ dependencies {
     implementation('com.fasterxml.jackson.module:jackson-module-afterburner')
 
     testImplementation('org.flywaydb:flyway-core')
+    testImplementation('org.flywaydb:flyway-mysql')
     testImplementation('org.springframework.boot:spring-boot-starter-test')
 
     testImplementation('org.testcontainers:testcontainers:1.17.2')
