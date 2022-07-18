@@ -3,13 +3,19 @@ package com.codeflix.admin.video.catalog.infrastructure.api;
 import com.codeflix.admin.video.catalog.ControllerTest;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryUseCase;
+import com.codeflix.admin.video.catalog.application.category.retrieve.get.CategoryOutput;
+import com.codeflix.admin.video.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
+import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotFoundException;
 import com.codeflix.admin.video.catalog.domain.validation.Error;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
 import com.codeflix.admin.video.catalog.infrastructure.category.models.CreateCategoryApiInput;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -37,6 +43,9 @@ public class CategoryAPITest {
 
 	@MockBean
 	private CreateCategoryUseCase createCategoryUseCase;
+
+	@MockBean
+	private GetCategoryByIdUseCase getCategoryByIdUseCase;
 
 	@Test
 	public void givenAValidCommand_whenCallsCreateCategory_thenShouldReturnCategoryId() throws Exception {
@@ -145,5 +154,67 @@ public class CategoryAPITest {
 										&& Objects.equals(expectedIsActive, cmd.isActive())
 				)
 		);
+	}
+
+	@Test
+	public void givenAValidId_whenCallsGetCategory_thenShouldReturnCategory() throws Exception {
+		final var expectedName = "Movies";
+		final var expectedDescription = "Movies Category";
+		final var expectedIsActive = true;
+
+		final var aCategory = Category
+				.newCategory(expectedName, expectedDescription, expectedIsActive);
+
+		final var expectedId = aCategory.getId().getValue();
+
+		when(getCategoryByIdUseCase.execute(any()))
+				.thenReturn(CategoryOutput.from(aCategory));
+
+		final var request = MockMvcRequestBuilders
+				.get("/categories/{id}", expectedId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON);
+
+		final var response = this.mvc.perform(request)
+				.andDo(print());
+
+		response.andExpectAll(
+				status().isOk(),
+				header().string("Content-Type", MediaType.APPLICATION_JSON_VALUE),
+				jsonPath("$.id", equalTo(expectedId)),
+				jsonPath("$.name", equalTo(expectedName)),
+				jsonPath("$.description", equalTo(expectedDescription)),
+				jsonPath("$.is_active", equalTo(expectedIsActive)),
+				jsonPath("$.created_at", equalTo(aCategory.getCreatedAt().toString())),
+				jsonPath("$.updated_at", equalTo(aCategory.getUpdatedAt().toString())),
+				jsonPath("$.deleted_at", equalTo(aCategory.getDeletedAt()))
+		);
+		verify(getCategoryByIdUseCase, times(1)).execute(eq(expectedId));
+	}
+
+	@Test
+	public void givenAValid_whenGatewayThrowsError_thenShouldReturnNotFoundException() throws Exception {
+		final var expectedId = CategoryID.from("123").getValue();
+		final var expectedErrorMessage = "Category with ID 123 was not found";
+
+		final var request = MockMvcRequestBuilders
+				.get("/categories/{id}", expectedId)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON);
+
+		when(getCategoryByIdUseCase.execute(any()))
+				.thenThrow(NotFoundException.with(
+						Category.class,
+						CategoryID.from(expectedId)
+				));
+
+		final var response = this.mvc.perform(request)
+				.andDo(print());
+
+		response.andExpectAll(
+				status().isNotFound(),
+				jsonPath("$.message", equalTo(expectedErrorMessage))
+		);
+		verify(getCategoryByIdUseCase, times(1)).execute(eq(expectedId));
 	}
 }
