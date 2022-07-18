@@ -4,6 +4,7 @@ import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -187,7 +188,6 @@ public class UpdateCategoryUseCaseTest {
 		final var expectedIsActive = false;
 		final var expectedId = "123";
 		final var expectedErrorMessage = "Category with ID 123 was not found";
-		final var expectedErrorCount = 1;
 
 		final var aCommand = UpdateCategoryCommand.with(
 				expectedId,
@@ -200,12 +200,11 @@ public class UpdateCategoryUseCaseTest {
 				.thenReturn(Optional.empty());
 
 		final var actualException = Assertions.assertThrows(
-				DomainException.class,
+				NotFoundException.class,
 				() -> useCase.execute(aCommand)
 		);
 
 		Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
-		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
 
 		Mockito.verify(categoryGateway, times(1)).findById(CategoryID.from(expectedId));
 		Mockito.verify(categoryGateway, times(0)).update(any());
