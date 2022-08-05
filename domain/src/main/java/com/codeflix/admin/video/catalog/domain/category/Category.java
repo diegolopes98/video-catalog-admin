@@ -133,7 +133,7 @@ public class Category extends AggregateRoot<CategoryID> {
 		validate(notificationHandler);
 
 		if (notificationHandler.hasErrors()) {
-			throw new NotificationException("Failed to create Aggregate Category", notificationHandler);
+			throw new NotificationException("Failed to update Aggregate Category", notificationHandler);
 		}
 
 		return this;

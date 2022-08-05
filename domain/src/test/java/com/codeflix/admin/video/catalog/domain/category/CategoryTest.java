@@ -1,6 +1,7 @@
 package com.codeflix.admin.video.catalog.domain.category;
 
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
 import com.codeflix.admin.video.catalog.domain.validation.handler.ThrowsValidationHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -255,7 +256,7 @@ public class CategoryTest {
 	}
 
 	@Test
-	public void givenAValidCategory_whenCallUpdateWithInvalidParams_thenReturnCategoryUpdated() {
+	public void givenAValidCategory_whenCallUpdateWithInvalidParams_thenReturnError() {
 		final String expectedName = null;
 		final var expectedDescription = "Movies Category";
 		final var expectedIsActive = true;
@@ -263,18 +264,18 @@ public class CategoryTest {
 		final var aCategory =
 				Category.newCategory("Old Movies", "Old Movies Description", expectedIsActive);
 
-		final var createdAt = aCategory.getCreatedAt();
-		final var updatedAt = aCategory.getUpdatedAt();
+		final var expectedMessage = "Failed to update Aggregate Category";
+		final var expectedErrorSize = 1;
+		final var expectedErrorMessage = "'name' should not be null";
 
-		final var actualCategory = aCategory.update(expectedName, expectedDescription, expectedIsActive);
+		final var actualException = Assertions.assertThrows(
+				NotificationException.class,
+				() -> aCategory.update(expectedName, expectedDescription, expectedIsActive)
+		);
 
-		Assertions.assertNotNull(actualCategory);
-		Assertions.assertEquals(aCategory.getId(), actualCategory.getId());
-		Assertions.assertEquals(expectedName, actualCategory.getName());
-		Assertions.assertEquals(expectedDescription, actualCategory.getDescription());
-		Assertions.assertEquals(expectedIsActive, actualCategory.isActive());
-		Assertions.assertEquals(createdAt, actualCategory.getCreatedAt());
-		Assertions.assertTrue(actualCategory.getUpdatedAt().isAfter(updatedAt));
-		Assertions.assertNull(actualCategory.getDeletedAt());
+		Assertions.assertNotNull(actualException);
+		Assertions.assertEquals(expectedMessage, actualException.getMessage());
+		Assertions.assertEquals(expectedErrorSize, actualException.getErrors().size());
+		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 	}
 }
