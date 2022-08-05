@@ -127,6 +127,15 @@ public class Category extends AggregateRoot<CategoryID> {
 		this.name = aName;
 		this.description = aDescription;
 		this.updatedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+
+		final var notificationHandler = NotificationValidationHandler.create();
+
+		validate(notificationHandler);
+
+		if (notificationHandler.hasErrors()) {
+			throw new NotificationException("Failed to create Aggregate Category", notificationHandler);
+		}
+
 		return this;
 	}
 
