@@ -1,7 +1,9 @@
 package com.codeflix.admin.video.catalog.domain.category;
 
 import com.codeflix.admin.video.catalog.domain.AggregateRoot;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
 import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
+import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +34,14 @@ public class Category extends AggregateRoot<CategoryID> {
 		this.createdAt = Objects.requireNonNull(aCreationDate, "'createdAt' should not be null");
 		this.updatedAt = Objects.requireNonNull(aUpdateDate, "'updatedAt' should not be null");
 		this.deletedAt = aDeleteDate;
+
+		final var notificationHandler = NotificationValidationHandler.create();
+
+		validate(notificationHandler);
+
+		if (notificationHandler.hasErrors()) {
+			throw new NotificationException("Failed to create Aggregate Category", notificationHandler);
+		}
 	}
 
 	public static Category newCategory(

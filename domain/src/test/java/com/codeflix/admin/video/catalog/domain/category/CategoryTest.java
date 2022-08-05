@@ -33,13 +33,10 @@ public class CategoryTest {
 		final var expectedDescription = "Movies category";
 		final var expectedIsActive = true;
 
-		final var actualCategory =
-				Category.newCategory(expectedName, expectedDescription, expectedIsActive);
-
 		final var actualException =
 				Assertions.assertThrows(
 						DomainException.class,
-						() -> actualCategory.validate(new ThrowsValidationHandler())
+						() -> Category.newCategory(expectedName, expectedDescription, expectedIsActive)
 				);
 		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
 		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -53,13 +50,10 @@ public class CategoryTest {
 		final var expectedDescription = "Movies category";
 		final var expectedIsActive = true;
 
-		final var actualCategory =
-				Category.newCategory(expectedName, expectedDescription, expectedIsActive);
-
 		final var actualException =
 				Assertions.assertThrows(
 						DomainException.class,
-						() -> actualCategory.validate(new ThrowsValidationHandler())
+						() -> Category.newCategory(expectedName, expectedDescription, expectedIsActive)
 				);
 		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
 		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -73,13 +67,10 @@ public class CategoryTest {
 		final var expectedDescription = "Movies category";
 		final var expectedIsActive = true;
 
-		final var actualCategory =
-				Category.newCategory(expectedName, expectedDescription, expectedIsActive);
-
 		final var actualException =
 				Assertions.assertThrows(
 						DomainException.class,
-						() -> actualCategory.validate(new ThrowsValidationHandler())
+						() -> Category.newCategory(expectedName, expectedDescription, expectedIsActive)
 				);
 		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
 		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
@@ -97,13 +88,10 @@ public class CategoryTest {
 		final var expectedDescription = "Movies category";
 		final var expectedIsActive = true;
 
-		final var actualCategory =
-				Category.newCategory(expectedName, expectedDescription, expectedIsActive);
-
 		final var actualException =
 				Assertions.assertThrows(
 						DomainException.class,
-						() -> actualCategory.validate(new ThrowsValidationHandler())
+						() -> Category.newCategory(expectedName, expectedDescription, expectedIsActive)
 				);
 		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
 		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());

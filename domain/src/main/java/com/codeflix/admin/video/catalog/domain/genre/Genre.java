@@ -43,7 +43,7 @@ public class Genre extends AggregateRoot<GenreID> {
         validate(notificationHandler);
 
         if (notificationHandler.hasErrors()) {
-            throw new NotificationException("Failed to create a Aggregate Genre", notificationHandler);
+            throw new NotificationException("Failed to create Aggregate Genre", notificationHandler);
         }
     }
 
