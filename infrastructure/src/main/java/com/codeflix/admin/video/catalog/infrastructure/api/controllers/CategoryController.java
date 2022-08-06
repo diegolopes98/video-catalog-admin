@@ -56,14 +56,10 @@ public class CategoryController implements CategoryAPI {
 				input.active() != null ? input.active() : true
 		);
 
-		final Function<NotificationValidationHandler, ResponseEntity<?>> onError = notification ->
-				ResponseEntity.unprocessableEntity().body(notification);
+		final var output = this.createCategoryUseCase.execute(aCommand);
 
-		final Function<CreateCategoryOutput, ResponseEntity<?>> onSuccess = output -> ResponseEntity
+		return ResponseEntity
 				.created(URI.create("/categories/" + output.id())).body(output);
-
-		return this.createCategoryUseCase.execute(aCommand)
-				.fold(onError, onSuccess);
 	}
 
 	@Override
@@ -80,13 +76,9 @@ public class CategoryController implements CategoryAPI {
 				input.active() != null ? input.active() : true
 		);
 
-		final Function<NotificationValidationHandler, ResponseEntity<?>> onError = notification ->
-				ResponseEntity.unprocessableEntity().body(notification);
+		final var output = this.updateCategoryUseCase.execute(aCommand);
 
-		final Function<UpdateCategoryOutput, ResponseEntity<?>> onSuccess = ResponseEntity::ok;
-
-		return this.updateCategoryUseCase.execute(aCommand)
-				.fold(onError, onSuccess);
+		return ResponseEntity.ok(output);
 	}
 
 	@Override

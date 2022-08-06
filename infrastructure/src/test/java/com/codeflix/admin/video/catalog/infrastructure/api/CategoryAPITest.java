@@ -14,6 +14,7 @@ import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.DomainException;
 import com.codeflix.admin.video.catalog.domain.exceptions.NotFoundException;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
 import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
 import com.codeflix.admin.video.catalog.domain.validation.Error;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
@@ -72,7 +73,7 @@ public class CategoryAPITest {
 				new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		when(createCategoryUseCase.execute(any()))
-				.thenReturn(Right(CreateCategoryOutput.from(CategoryID.from("123").getValue())));
+				.thenReturn(CreateCategoryOutput.from(CategoryID.from("123").getValue()));
 
 		final var request = MockMvcRequestBuilders
 				.post("/categories")
@@ -108,7 +109,7 @@ public class CategoryAPITest {
 				new CreateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
 		when(createCategoryUseCase.execute(any()))
-				.thenReturn(Left(NotificationValidationHandler.create(new Error(expectedMessage))));
+				.thenThrow(new NotificationException("mock exception", NotificationValidationHandler.create(new Error(expectedMessage))));
 
 		final var request = MockMvcRequestBuilders
 				.post("/categories")
@@ -245,7 +246,7 @@ public class CategoryAPITest {
 		final var expectedId = aCategory.getId().getValue();
 
 		when(updateCategoryUseCase.execute(any()))
-				.thenReturn(Right(UpdateCategoryOutput.from(expectedId)));
+				.thenReturn(UpdateCategoryOutput.from(expectedId));
 
 		final var input = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 
@@ -323,13 +324,12 @@ public class CategoryAPITest {
 		final var expectedErrorMessage = "'name' should not be null";
 
 		when(updateCategoryUseCase.execute(any()))
-				.thenReturn(
-						Left(
-								NotificationValidationHandler.create(
-										new Error(expectedErrorMessage)
-								)
+				.thenThrow(new NotificationException(
+						"mock exception",
+						NotificationValidationHandler.create(
+								new Error(expectedErrorMessage)
 						)
-				);
+				));
 
 		final var input = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
 

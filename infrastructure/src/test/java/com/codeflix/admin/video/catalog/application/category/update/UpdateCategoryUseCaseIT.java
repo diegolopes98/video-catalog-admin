@@ -4,6 +4,7 @@ import com.codeflix.admin.video.catalog.IntegrationTest;
 import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 import com.codeflix.admin.video.catalog.domain.exceptions.NotFoundException;
+import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.junit.jupiter.api.Assertions;
@@ -55,7 +56,7 @@ public class UpdateCategoryUseCaseIT {
 
 		Assertions.assertEquals(1, repository.count());
 
-		final var actualOutput = useCase.execute(aCommand).get();
+		final var actualOutput = useCase.execute(aCommand);
 
 		Assertions.assertNotNull(actualOutput);
 		Assertions.assertNotNull(actualOutput.id());
@@ -89,7 +90,7 @@ public class UpdateCategoryUseCaseIT {
 
 		saveAllAndFlush(aCategory);
 
-		final var actualOutput = useCase.execute(aCommand).get();
+		final var actualOutput = useCase.execute(aCommand);
 
 		Assertions.assertNotNull(actualOutput);
 		Assertions.assertNotNull(actualOutput.id());
@@ -126,10 +127,13 @@ public class UpdateCategoryUseCaseIT {
 
 		saveAllAndFlush(aCategory);
 
-		final var notificationHandler = useCase.execute(aCommand).getLeft();
+		final var actualException = Assertions.assertThrows(
+				NotificationException.class,
+				() -> useCase.execute(aCommand)
+		);
 
-		Assertions.assertEquals(expectedErrorCount, notificationHandler.getErrors().size());
-		Assertions.assertEquals(expectedErrorMessage, notificationHandler.firstError().message());
+		Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
+		Assertions.assertEquals(expectedErrorMessage, actualException.getErrors().get(0).message());
 
 		Mockito.verify(categoryGateway, Mockito.times(0)).create(any());
 	}
@@ -143,7 +147,6 @@ public class UpdateCategoryUseCaseIT {
 		final var expectedIsActive = true;
 		final var expectedId = aCategory.getId();
 		final var expectedErrorMessage = "gateway mock exception";
-		final var expectedErrorCount = 1;
 
 		final var aCommand = UpdateCategoryCommand.with(
 				expectedId.getValue(),
@@ -156,10 +159,12 @@ public class UpdateCategoryUseCaseIT {
 
 		doThrow(new IllegalStateException(expectedErrorMessage)).when(categoryGateway).update(any());
 
-		final var notificationHandler = useCase.execute(aCommand).getLeft();
+		final var actualException = Assertions.assertThrows(
+				IllegalStateException.class,
+				() -> useCase.execute(aCommand)
+		);
 
-		Assertions.assertEquals(expectedErrorCount, notificationHandler.getErrors().size());
-		Assertions.assertEquals(expectedErrorMessage, notificationHandler.firstError().message());
+		Assertions.assertEquals(expectedErrorMessage, actualException.getMessage());
 
 		final var actualCategory = repository.findById(expectedId.getValue()).get();
 
