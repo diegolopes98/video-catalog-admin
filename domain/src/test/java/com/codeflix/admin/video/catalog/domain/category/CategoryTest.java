@@ -264,7 +264,7 @@ public class CategoryTest {
 		final var aCategory =
 				Category.newCategory("Old Movies", "Old Movies Description", expectedIsActive);
 
-		final var expectedMessage = "Failed to update Aggregate Category";
+		final var expectedMessage = "Failed to validate Aggregate Category";
 		final var expectedErrorSize = 1;
 		final var expectedErrorMessage = "'name' should not be null";
 

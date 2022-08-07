@@ -2,11 +2,11 @@ package com.codeflix.admin.video.catalog.domain.category;
 
 import com.codeflix.admin.video.catalog.domain.AggregateRoot;
 import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
+import com.codeflix.admin.video.catalog.domain.utils.InstantUtils;
 import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Category extends AggregateRoot<CategoryID> {
@@ -35,13 +35,7 @@ public class Category extends AggregateRoot<CategoryID> {
 		this.updatedAt = Objects.requireNonNull(aUpdateDate, "'updatedAt' should not be null");
 		this.deletedAt = aDeleteDate;
 
-		final var notificationHandler = NotificationValidationHandler.create();
-
-		validate(notificationHandler);
-
-		if (notificationHandler.hasErrors()) {
-			throw new NotificationException("Failed to create Aggregate Category", notificationHandler);
-		}
+		selfValidate();
 	}
 
 	public static Category newCategory(
@@ -50,7 +44,7 @@ public class Category extends AggregateRoot<CategoryID> {
 			final boolean isActive
 	) {
 		final var id = CategoryID.unique();
-		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		final var now = InstantUtils.now();
 		final var deletedAt = isActive ? null : now;
 		return new Category(
 				id,
@@ -101,7 +95,7 @@ public class Category extends AggregateRoot<CategoryID> {
 	}
 
 	public Category activate() {
-		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		final var now = InstantUtils.now();
 		this.deletedAt = null;
 		this.active = true;
 		this.updatedAt = now;
@@ -109,7 +103,7 @@ public class Category extends AggregateRoot<CategoryID> {
 	}
 
 	public Category deactivate() {
-		final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		final var now = InstantUtils.now();
 		if (getDeletedAt() == null) {
 			this.deletedAt = now;
 		}
@@ -126,15 +120,9 @@ public class Category extends AggregateRoot<CategoryID> {
 		}
 		this.name = aName;
 		this.description = aDescription;
-		this.updatedAt = Instant.now().truncatedTo(ChronoUnit.MICROS);
+		this.updatedAt = InstantUtils.now();
 
-		final var notificationHandler = NotificationValidationHandler.create();
-
-		validate(notificationHandler);
-
-		if (notificationHandler.hasErrors()) {
-			throw new NotificationException("Failed to update Aggregate Category", notificationHandler);
-		}
+		selfValidate();
 
 		return this;
 	}
@@ -165,5 +153,15 @@ public class Category extends AggregateRoot<CategoryID> {
 
 	public Instant getDeletedAt() {
 		return deletedAt;
+	}
+
+	private void selfValidate() {
+		final var notificationHandler = NotificationValidationHandler.create();
+
+		validate(notificationHandler);
+
+		if (notificationHandler.hasErrors()) {
+			throw new NotificationException("Failed to validate Aggregate Category", notificationHandler);
+		}
 	}
 }
