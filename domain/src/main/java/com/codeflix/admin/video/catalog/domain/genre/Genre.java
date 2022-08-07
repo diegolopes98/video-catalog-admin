@@ -8,7 +8,6 @@ import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,13 +38,7 @@ public class Genre extends AggregateRoot<GenreID> {
         this.updatedAt = anUpdateDate;
         this.deletedAt = aDeleteDate;
 
-        final var notificationHandler = NotificationValidationHandler.create();
-
-        validate(notificationHandler);
-
-        if (notificationHandler.hasErrors()) {
-            throw new NotificationException("Failed to create Aggregate Genre", notificationHandler);
-        }
+        selfValidate();
     }
 
     public static Genre with(
@@ -119,6 +112,19 @@ public class Genre extends AggregateRoot<GenreID> {
         return this;
     }
 
+    public Genre update(final String aName, final boolean isActive, final List<CategoryID> categories) {
+        this.name = aName;
+        if (isActive) {
+            activate();
+        } else {
+            deactivate();
+        }
+        this.categories = new ArrayList<>(categories);
+        this.updatedAt = InstantUtils.now();
+        selfValidate();
+        return this;
+    }
+
     public String getName() {
         return name;
     }
@@ -141,5 +147,15 @@ public class Genre extends AggregateRoot<GenreID> {
 
     public Instant getDeletedAt() {
         return deletedAt;
+    }
+
+    private void selfValidate() {
+        final var notificationHandler = NotificationValidationHandler.create();
+
+        validate(notificationHandler);
+
+        if (notificationHandler.hasErrors()) {
+            throw new NotificationException("Failed to create Aggregate Genre", notificationHandler);
+        }
     }
 }
