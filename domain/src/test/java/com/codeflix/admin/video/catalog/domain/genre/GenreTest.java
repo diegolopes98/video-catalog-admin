@@ -78,4 +78,39 @@ public class GenreTest {
         Assertions.assertEquals(expectedErrorCount, actualException.getErrors().size());
         Assertions.assertEquals(expectedErrorMsg, actualException.getErrors().get(0).message());
     }
+
+    @Test
+    public void givenAnActiveGenre_whenCallInactivate_thenShouldReceiveOK() {
+        final var expectedName = "Action";
+
+        final var actualGenre = Genre.newGenre(expectedName, true);
+
+        Assertions.assertTrue(actualGenre.isActive());
+        Assertions.assertNull(actualGenre.getDeletedAt());
+
+        actualGenre.deactivate();
+
+        Assertions.assertFalse(actualGenre.isActive());
+        Assertions.assertNotNull(actualGenre.getDeletedAt());
+    }
+
+    @Test
+    public void givenAnInactiveGenre_whenCallActivate_thenShouldReceiveOK() {
+        final var expectedName = "Action";
+
+        final var actualGenre = Genre.newGenre(expectedName, false);
+
+        Assertions.assertFalse(actualGenre.isActive());
+        Assertions.assertNotNull(actualGenre.getDeletedAt());
+
+        final var actualCreatedAt = actualGenre.getCreatedAt();
+        final var actualUpdatedAt = actualGenre.getUpdatedAt();
+
+        actualGenre.activate();
+
+        Assertions.assertTrue(actualGenre.isActive());
+        Assertions.assertNull(actualGenre.getDeletedAt());
+        Assertions.assertEquals(actualCreatedAt, actualGenre.getCreatedAt());
+        Assertions.assertTrue(actualUpdatedAt.isBefore(actualGenre.getUpdatedAt()));
+    }
 }
