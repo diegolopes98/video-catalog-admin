@@ -3,6 +3,7 @@ package com.codeflix.admin.video.catalog.domain.genre;
 import com.codeflix.admin.video.catalog.domain.AggregateRoot;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.exceptions.NotificationException;
+import com.codeflix.admin.video.catalog.domain.utils.InstantUtils;
 import com.codeflix.admin.video.catalog.domain.validation.ValidationHandler;
 import com.codeflix.admin.video.catalog.domain.validation.handler.NotificationValidationHandler;
 
@@ -83,7 +84,7 @@ public class Genre extends AggregateRoot<GenreID> {
 
     public static Genre newGenre(final String aName, final boolean isActive) {
         final var anId = GenreID.unique();
-        final var now = Instant.now().truncatedTo(ChronoUnit.MICROS);
+        final var now = InstantUtils.now();
         final Instant anDeleteDate = isActive ? null : now;
         return Genre.with(
                 anId,
@@ -99,6 +100,23 @@ public class Genre extends AggregateRoot<GenreID> {
     @Override
     public void validate(final ValidationHandler handler) {
         new GenreValidator(this, handler).validate();
+    }
+
+    public Genre activate() {
+        this.deletedAt = null;
+        this.updatedAt = InstantUtils.now();
+        this.active = true;
+        return this;
+    }
+
+    public Genre deactivate() {
+        final var now = InstantUtils.now();
+        if (getDeletedAt() == null) {
+            this.deletedAt = now;
+        }
+        this.updatedAt = now;
+        this.active = false;
+        return this;
     }
 
     public String getName() {
