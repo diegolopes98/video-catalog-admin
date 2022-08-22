@@ -61,10 +61,10 @@ public class Genre extends AggregateRoot<GenreID> {
         );
     }
 
-    public static Genre with(
+    public static Genre from(
             final Genre aGenre
     ) {
-        return new Genre(
+        return Genre.with(
                 aGenre.id,
                 aGenre.name,
                 aGenre.active,
