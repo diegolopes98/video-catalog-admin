@@ -55,9 +55,4 @@ public class NotificationValidationHandler implements ValidationHandler {
 	public List<Error> getErrors() {
 		return this.errors;
 	}
-
-	@Override
-	public boolean hasErrors() {
-		return ValidationHandler.super.hasErrors();
-	}
 }

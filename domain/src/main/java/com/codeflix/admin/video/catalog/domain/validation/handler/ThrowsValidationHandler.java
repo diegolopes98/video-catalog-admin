@@ -30,9 +30,4 @@ public class ThrowsValidationHandler implements ValidationHandler {
 	public List<Error> getErrors() {
 		return null;
 	}
-
-	@Override
-	public boolean hasErrors() {
-		return ValidationHandler.super.hasErrors();
-	}
 }
