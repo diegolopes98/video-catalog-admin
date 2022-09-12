@@ -15,6 +15,7 @@ import java.util.Set;
 public class GenreJpaEntity {
     public static final String TABLE_NAME = "genre";
 
+    @Id
     @Column(name = "id", nullable = false)
     private String id;
 
