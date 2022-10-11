@@ -13,23 +13,16 @@ import java.util.List;
 
 public class MySQLCleanUpExtension implements BeforeEachCallback {
 	@Override
-	public void beforeEach(final ExtensionContext context) throws Exception {
-		final var appContext = SpringExtension
-				.getApplicationContext(context);
+	public void beforeEach(final ExtensionContext context) {
+		final var appContext = SpringExtension.getApplicationContext(context);
 
-		cleanup(List.of(
+		cleanUp(List.of(
 				appContext.getBean(GenreRepository.class),
 				appContext.getBean(CategoryRepository.class)
 		));
-
-		final var em = appContext
-				.getBean(TestEntityManager.class);
-
-		em.flush();
-		em.clear();
 	}
 
-	private void cleanup(final Collection<CrudRepository> repositories) {
+	private void cleanUp(final Collection<CrudRepository> repositories) {
 		repositories.forEach(CrudRepository::deleteAll);
 	}
 }
