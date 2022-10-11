@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Comparator;
 import java.util.List;
 
 @MySQLGatewayTest
@@ -369,5 +370,38 @@ public class CategoryMySQLGatewayTest {
 		Assertions.assertEquals(expectedTotal, actualResult.total());
 		Assertions.assertEquals(expectedItemsCount, actualResult.items().size());
 		Assertions.assertEquals(movies.getId(), actualResult.items().get(0).getId());
+	}
+
+	@Test
+	public void givenPrePersistedCategories_whenCallsExistsByIds_shouldReturnIds() {
+		// given
+		final var movies = Category.newCategory("Movies", "blablabla", true);
+		final var sitcoms = Category.newCategory("Sitcoms", "blabla", true);
+		final var documentaries = Category.newCategory("Documentaries", "bla", true);
+
+		Assertions.assertEquals(0, repository.count());
+
+		repository.saveAll(List.of(
+				CategoryJpaEntity.from(movies),
+				CategoryJpaEntity.from(sitcoms),
+				CategoryJpaEntity.from(documentaries)
+		));
+
+		Assertions.assertEquals(3, repository.count());
+
+		final var expectedIds = List.of(movies.getId(), sitcoms.getId());
+
+		final var ids = List.of(movies.getId(), sitcoms.getId(), CategoryID.from("123"));
+
+		// when
+		final var actualResult = gateway.existsByIds(ids);
+
+		Assertions.assertEquals(sorted(expectedIds), sorted(actualResult));
+	}
+
+	private List<CategoryID> sorted(final List<CategoryID> expectedCategories) {
+		return expectedCategories.stream()
+				.sorted(Comparator.comparing(CategoryID::getValue))
+				.toList();
 	}
 }
