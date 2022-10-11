@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import static com.codeflix.admin.video.catalog.infrastructure.utils.SpecificationUtils.like;
 
@@ -60,11 +61,7 @@ public class CategoryMySQLGateway implements CategoryGateway {
 
 		final var specifications = Optional.ofNullable(aQuery.terms())
 				.filter(str -> !str.isBlank())
-				.map(str -> {
-					final Specification<CategoryJpaEntity> nameLike = like("name", str);
-					final Specification<CategoryJpaEntity> descriptionLike = like("description", str);
-					return nameLike.or(descriptionLike);
-				})
+				.map(this::assembleSpecification)
 				.orElse(null);
 
 		final var pageResult =
@@ -82,6 +79,12 @@ public class CategoryMySQLGateway implements CategoryGateway {
 	public List<CategoryID> existsByIds(Iterable<CategoryID> ids) {
 		// TODO: implement when working in genre infrastructure
 		return Collections.emptyList();
+	}
+
+	private Specification<CategoryJpaEntity> assembleSpecification(final String str) {
+		final Specification<CategoryJpaEntity> nameLike = like("name", str);
+		final Specification<CategoryJpaEntity> descriptionLike = like("description", str);
+		return nameLike.or(descriptionLike);
 	}
 
 	private Category save(final Category aCategory) {
