@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.Instant;
 
-@Entity
+@Entity(name = "Category")
 @Table(name = CategoryJpaEntity.TABLE_NAME)
 public class CategoryJpaEntity {
 	public static final String TABLE_NAME = "category";

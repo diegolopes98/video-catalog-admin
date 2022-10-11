@@ -3,8 +3,8 @@ package com.codeflix.admin.video.catalog.infrastructure.category;
 import com.codeflix.admin.video.catalog.domain.category.Category;
 import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
-import com.codeflix.admin.video.catalog.domain.pagination.SearchQuery;
 import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
+import com.codeflix.admin.video.catalog.domain.pagination.SearchQuery;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryJpaEntity;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryRepository;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
@@ -76,9 +75,14 @@ public class CategoryMySQLGateway implements CategoryGateway {
 	}
 
 	@Override
-	public List<CategoryID> existsByIds(Iterable<CategoryID> ids) {
-		// TODO: implement when working in genre infrastructure
-		return Collections.emptyList();
+	public List<CategoryID> existsByIds(Iterable<CategoryID> categoryIDs) {
+		final var ids = StreamSupport.stream(categoryIDs.spliterator(), false)
+				.map(CategoryID::getValue)
+				.toList();
+
+		return this.repository.existsByIds(ids).stream()
+				.map(CategoryID::from)
+				.toList();
 	}
 
 	private Specification<CategoryJpaEntity> assembleSpecification(final String str) {
