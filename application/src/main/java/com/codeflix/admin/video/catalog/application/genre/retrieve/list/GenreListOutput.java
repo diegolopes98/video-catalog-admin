@@ -3,13 +3,12 @@ package com.codeflix.admin.video.catalog.application.genre.retrieve.list;
 
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.genre.Genre;
-import com.codeflix.admin.video.catalog.domain.genre.GenreID;
 
 import java.time.Instant;
 import java.util.List;
 
 public record GenreListOutput(
-		GenreID id,
+		String id,
 		String name,
 		boolean isActive,
 		List<String> categories,
@@ -18,7 +17,7 @@ public record GenreListOutput(
 ) {
 	public static GenreListOutput from(final Genre aGenre) {
 		return new GenreListOutput(
-				aGenre.getId(),
+				aGenre.getId().getValue(),
 				aGenre.getName(),
 				aGenre.isActive(),
 				asString(aGenre.getCategories()),
