@@ -1,5 +1,7 @@
 package com.codeflix.admin.video.catalog.e2e;
 
+import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryOutput;
+import com.codeflix.admin.video.catalog.application.genre.create.CreateGenreOutput;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 import com.codeflix.admin.video.catalog.domain.genre.GenreID;
 import com.codeflix.admin.video.catalog.infrastructure.category.models.CategoryResponse;
@@ -28,9 +30,9 @@ public interface MockDsl {
     ) throws Exception {
         final var aRequestBody = new CreateCategoryRequest(aName, aDescription, isActive);
 
-        final var actualId = this.given("/categories", aRequestBody);
+        final var output = this.given("/categories", aRequestBody, CreateCategoryOutput.class);
 
-        return CategoryID.from(actualId);
+        return CategoryID.from(output.id());
     }
 
     default GenreID givenAGenre(
@@ -40,9 +42,9 @@ public interface MockDsl {
     ) throws Exception {
         final var aRequestBody = new CreateGenreRequest(aName, mapTo(categories, CategoryID::getValue), isActive);
 
-        final var actualId = this.given("/genres", aRequestBody);
+        final var output = this.given("/genres", aRequestBody, CreateGenreOutput.class);
 
-        return GenreID.from(actualId);
+        return GenreID.from(output.id());
     }
 
     default GenreResponse retrieveAGenre(final String anId) throws Exception {
@@ -61,16 +63,17 @@ public interface MockDsl {
                 .toList();
     }
 
-    private String given(final String url, final Object body) throws Exception {
+    private <T> T given(final String url, final Object body, final Class<T> clazz) throws Exception {
         final var aRequest = post(url)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(Json.writeValueAsString(body));
 
-        return this.mvc().perform(aRequest)
+        final var response = this.mvc().perform(aRequest)
                 .andExpect(status().isCreated())
                 .andReturn()
-                .getResponse().getHeader("Location")
-                .replace("%s/".formatted(url), "");
+                .getResponse().getContentAsString();
+
+        return Json.readValue(response, clazz);
     }
 
     private <T> T retrieve(final String url, final Class<T> clazz) throws Exception {
@@ -78,11 +81,11 @@ public interface MockDsl {
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
-        final var json = this.mvc().perform(aRequest)
+        final var response = this.mvc().perform(aRequest)
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse().getContentAsString();
 
-        return Json.readValue(json, clazz);
+        return Json.readValue(response, clazz);
     }
 }
