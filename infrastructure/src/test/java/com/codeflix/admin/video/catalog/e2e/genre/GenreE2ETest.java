@@ -55,7 +55,7 @@ public class GenreE2ETest implements MockDsl {
 
         final var actualId = givenAGenre(expectedName, expectedCategories, expectedIsActive);
 
-        final var actualGenre = retrieveAGenre(actualId.getValue());
+        final var actualGenre = retrieveAGenre(actualId);
 
         Assertions.assertNotNull(actualGenre);
         Assertions.assertEquals(expectedName, actualGenre.name());
@@ -78,7 +78,7 @@ public class GenreE2ETest implements MockDsl {
 
         final var actualId = givenAGenre(expectedName, expectedCategories, expectedIsActive);
 
-        final var actualGenre = retrieveAGenre(actualId.getValue());
+        final var actualGenre = retrieveAGenre(actualId);
 
         Assertions.assertNotNull(actualGenre);
         Assertions.assertEquals(expectedName, actualGenre.name());
