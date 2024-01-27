@@ -135,6 +135,10 @@ public interface MockDsl {
         return this.performPut("/genres/" + anId.getValue(), updateGenreRequest);
     }
 
+    default ResultActions deleteAGenre(final GenreID anId) throws Exception {
+        return this.performDelete("/genres/" + anId.getValue());
+    }
+
     default ResultActions listGenres(
             final int page,
             final int perPage,

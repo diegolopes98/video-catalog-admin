@@ -2,6 +2,7 @@ package com.codeflix.admin.video.catalog.e2e.genre;
 
 import com.codeflix.admin.video.catalog.E2ETest;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
+import com.codeflix.admin.video.catalog.domain.genre.GenreID;
 import com.codeflix.admin.video.catalog.e2e.MockDsl;
 import com.codeflix.admin.video.catalog.infrastructure.genre.models.UpdateGenreRequest;
 import com.codeflix.admin.video.catalog.infrastructure.genre.persistence.GenreRepository;
@@ -181,11 +182,11 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
         Assertions.assertEquals(0, repository.count());
 
-        final var filmes = givenACategory("Movies", null, true);
+        final var movies = givenACategory("Movies", null, true);
 
         final var expectedName = "Action";
         final var expectedIsActive = true;
-        final var expectedCategories = List.of(filmes);
+        final var expectedCategories = List.of(movies);
 
         final var actualId = givenAGenre(expectedName, expectedCategories, expectedIsActive);
 
@@ -223,11 +224,11 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
         Assertions.assertEquals(0, repository.count());
 
-        final var filmes = givenACategory("Movies", null, true);
+        final var movies = givenACategory("Movies", null, true);
 
         final var expectedName = "Action";
         final var expectedIsActive = true;
-        final var expectedCategories = List.of(filmes);
+        final var expectedCategories = List.of(movies);
 
         final var actualId = givenAGenre("acTiOn", expectedCategories, expectedIsActive);
 
@@ -258,11 +259,11 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
         Assertions.assertEquals(0, repository.count());
 
-        final var filmes = givenACategory("Filmes", null, true);
+        final var movies = givenACategory("Movies", null, true);
 
-        final var expectedName = "Ação";
+        final var expectedName = "Action";
         final var expectedIsActive = false;
-        final var expectedCategories = List.of(filmes);
+        final var expectedCategories = List.of(movies);
 
         final var actualId = givenAGenre(expectedName, expectedCategories, true);
 
@@ -293,7 +294,7 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
         Assertions.assertEquals(0, repository.count());
 
-        final var expectedName = "Ação";
+        final var expectedName = "Action";
         final var expectedIsActive = true;
         final var expectedCategories = List.<CategoryID>of();
 
@@ -316,5 +317,32 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertNotNull(actualGenre.getCreatedAt());
         Assertions.assertNotNull(actualGenre.getUpdatedAt());
         Assertions.assertNull(actualGenre.getDeletedAt());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToDeleteAGenreByItsIdentifier() throws Exception {
+        Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+        Assertions.assertEquals(0, repository.count());
+
+        final var movies = givenACategory("Movies", null, true);
+
+        final var actualId = givenAGenre("Action", List.of(movies), true);
+
+        deleteAGenre(actualId)
+                .andExpect(status().isNoContent());
+
+        Assertions.assertFalse(this.repository.existsById(actualId.getValue()));
+        Assertions.assertEquals(0, repository.count());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldNotSeeAnErrorByDeletingANotExistentGenre() throws Exception {
+        Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+        Assertions.assertEquals(0, repository.count());
+
+        deleteAGenre(GenreID.from("12313"))
+                .andExpect(status().isNoContent());
+
+        Assertions.assertEquals(0, repository.count());
     }
 }
