@@ -53,7 +53,7 @@ public interface MockDsl {
     }
 
     default CategoryResponse retrieveACategory(final String anId) throws Exception {
-        final var url = "/genres/" + anId;
+        final var url = "/categories/" + anId;
         return retrieve(url, CategoryResponse.class);
     }
 
