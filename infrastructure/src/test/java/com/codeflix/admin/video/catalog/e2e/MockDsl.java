@@ -11,6 +11,7 @@ import com.codeflix.admin.video.catalog.infrastructure.category.models.UpdateCat
 import com.codeflix.admin.video.catalog.infrastructure.configuration.json.Json;
 import com.codeflix.admin.video.catalog.infrastructure.genre.models.CreateGenreRequest;
 import com.codeflix.admin.video.catalog.infrastructure.genre.models.GenreResponse;
+import com.codeflix.admin.video.catalog.infrastructure.genre.models.UpdateGenreRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -125,6 +126,13 @@ public interface MockDsl {
                 .getResponse().getContentAsString();
 
         return Json.readValue(json, GenreResponse.class);
+    }
+
+    default ResultActions updateAGenre(
+            final GenreID anId,
+            final UpdateGenreRequest updateGenreRequest
+    ) throws Exception {
+        return this.performPut("/genres/" + anId.getValue(), updateGenreRequest);
     }
 
     default ResultActions listGenres(
