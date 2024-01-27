@@ -127,6 +127,38 @@ public interface MockDsl {
         return Json.readValue(json, GenreResponse.class);
     }
 
+    default ResultActions listGenres(
+            final int page,
+            final int perPage,
+            final String search
+    ) throws Exception {
+        return listGenres(page, perPage, search, "", "");
+    }
+
+    default ResultActions listGenres(
+            final int page,
+            final int perPage
+    ) throws Exception {
+        return listGenres(page, perPage, "", "", "");
+    }
+
+    default ResultActions listGenres(
+            final int page,
+            final int perPage,
+            final String search,
+            final String sort,
+            final String direction
+    ) throws Exception {
+        return this.list(
+                "/genres",
+                page,
+                perPage,
+                search,
+                sort,
+                direction
+        );
+    }
+
     /**
      * Utils
      */

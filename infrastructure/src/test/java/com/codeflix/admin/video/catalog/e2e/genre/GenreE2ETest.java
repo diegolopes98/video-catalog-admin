@@ -16,6 +16,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @E2ETest
 @Testcontainers
 public class GenreE2ETest implements MockDsl {
@@ -87,5 +92,84 @@ public class GenreE2ETest implements MockDsl {
         Assertions.assertNotNull(actualGenre.createdAt());
         Assertions.assertNotNull(actualGenre.updatedAt());
         Assertions.assertNull(actualGenre.deletedAt());
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToNavigateThruAllGenres() throws Exception {
+        Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+        Assertions.assertEquals(0, repository.count());
+
+        givenAGenre("Action", List.of(), true);
+        givenAGenre("Sports", List.of(), true);
+        givenAGenre("Drama", List.of(), true);
+
+        listGenres(0, 1)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(0)))
+                .andExpect(jsonPath("$.per_page", equalTo(1)))
+                .andExpect(jsonPath("$.total", equalTo(3)))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].name", equalTo("Action")));
+
+        listGenres(1, 1)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(1)))
+                .andExpect(jsonPath("$.per_page", equalTo(1)))
+                .andExpect(jsonPath("$.total", equalTo(3)))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].name", equalTo("Drama")));
+
+        listGenres(2, 1)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(2)))
+                .andExpect(jsonPath("$.per_page", equalTo(1)))
+                .andExpect(jsonPath("$.total", equalTo(3)))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].name", equalTo("Sports")));
+
+        listGenres(3, 1)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(3)))
+                .andExpect(jsonPath("$.per_page", equalTo(1)))
+                .andExpect(jsonPath("$.total", equalTo(3)))
+                .andExpect(jsonPath("$.items", hasSize(0)));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToSearchBetweenAllGenres() throws Exception {
+        Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+        Assertions.assertEquals(0, repository.count());
+
+        givenAGenre("Action", List.of(), true);
+        givenAGenre("Sports", List.of(), true);
+        givenAGenre("Drama", List.of(), true);
+
+        listGenres(0, 1, "dRa")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(0)))
+                .andExpect(jsonPath("$.per_page", equalTo(1)))
+                .andExpect(jsonPath("$.total", equalTo(1)))
+                .andExpect(jsonPath("$.items", hasSize(1)))
+                .andExpect(jsonPath("$.items[0].name", equalTo("Drama")));
+    }
+
+    @Test
+    public void asACatalogAdminIShouldBeAbleToSortAllGenresByNameDesc() throws Exception {
+        Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+        Assertions.assertEquals(0, repository.count());
+
+        givenAGenre("Action", List.of(), true);
+        givenAGenre("Sports", List.of(), true);
+        givenAGenre("Drama", List.of(), true);
+
+        listGenres(0, 3, "", "name", "desc")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.current_page", equalTo(0)))
+                .andExpect(jsonPath("$.per_page", equalTo(3)))
+                .andExpect(jsonPath("$.total", equalTo(3)))
+                .andExpect(jsonPath("$.items", hasSize(3)))
+                .andExpect(jsonPath("$.items[0].name", equalTo("Sports")))
+                .andExpect(jsonPath("$.items[1].name", equalTo("Drama")))
+                .andExpect(jsonPath("$.items[2].name", equalTo("Action")));
     }
 }
