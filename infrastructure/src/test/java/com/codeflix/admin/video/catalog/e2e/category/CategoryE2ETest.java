@@ -189,7 +189,7 @@ public class CategoryE2ETest implements MockDsl {
 		Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
 		Assertions.assertEquals(0, this.repository.count());
 
-		final var aRequest = get("/categories/" + CategoryID.from("123").getValue())
+		final var aRequest = get("/categories/123")
 				.accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON);
 
@@ -226,6 +226,58 @@ public class CategoryE2ETest implements MockDsl {
 	}
 
 	@Test
+	public void asACatalogAdminIShouldBeAbleToInactivateACategoryByItsIdentifier() throws Exception {
+		Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+		Assertions.assertEquals(0, repository.count());
+
+		final var expectedName = "Movies";
+		final var expectedDescription = "Movies category";
+		final var expectedIsActive = false;
+
+		final var actualId = givenACategory(expectedName, expectedDescription, true);
+
+		final var aRequestBody = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
+
+		updateACategory(actualId, aRequestBody)
+				.andExpect(status().isOk());
+
+		final var actualCategory = repository.findById(actualId.getValue()).get();
+
+		Assertions.assertEquals(expectedName, actualCategory.getName());
+		Assertions.assertEquals(expectedDescription, actualCategory.getDescription());
+		Assertions.assertEquals(expectedIsActive, actualCategory.isActive());
+		Assertions.assertNotNull(actualCategory.getCreatedAt());
+		Assertions.assertNotNull(actualCategory.getUpdatedAt());
+		Assertions.assertNotNull(actualCategory.getDeletedAt());
+	}
+
+	@Test
+	public void asACatalogAdminIShouldBeAbleToActivateACategoryByItsIdentifier() throws Exception {
+		Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+		Assertions.assertEquals(0, repository.count());
+
+		final var expectedName = "Movies";
+		final var expectedDescription = "Movies category";
+		final var expectedIsActive = true;
+
+		final var actualId = givenACategory(expectedName, expectedDescription, false);
+
+		final var aRequestBody = new UpdateCategoryRequest(expectedName, expectedDescription, expectedIsActive);
+
+		updateACategory(actualId, aRequestBody)
+				.andExpect(status().isOk());
+
+		final var actualCategory = repository.findById(actualId.getValue()).get();
+
+		Assertions.assertEquals(expectedName, actualCategory.getName());
+		Assertions.assertEquals(expectedDescription, actualCategory.getDescription());
+		Assertions.assertEquals(expectedIsActive, actualCategory.isActive());
+		Assertions.assertNotNull(actualCategory.getCreatedAt());
+		Assertions.assertNotNull(actualCategory.getUpdatedAt());
+		Assertions.assertNull(actualCategory.getDeletedAt());
+	}
+
+	@Test
 	public void asACatalogAdminIShouldBeAbleToDeleteACategoryByItsIdentifier() throws Exception {
 		Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
 		Assertions.assertEquals(0, this.repository.count());
@@ -239,5 +291,16 @@ public class CategoryE2ETest implements MockDsl {
 		deleteACategory(actualId).andExpect(status().isNoContent());
 
 		Assertions.assertFalse(this.repository.existsById(actualId.getValue()));
+	}
+
+	@Test
+	public void asACatalogAdminIShouldNotSeeAnErrorByDeletingANotExistentCategory() throws Exception {
+		Assertions.assertTrue(MYSQL_CONTAINER.isRunning());
+		Assertions.assertEquals(0, repository.count());
+
+		deleteACategory(CategoryID.from("12313"))
+				.andExpect(status().isNoContent());
+
+		Assertions.assertEquals(0, repository.count());
 	}
 }
