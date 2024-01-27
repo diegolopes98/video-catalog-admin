@@ -2,8 +2,7 @@ package com.codeflix.admin.video.catalog.e2e.category;
 
 import com.codeflix.admin.video.catalog.E2ETest;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
-import com.codeflix.admin.video.catalog.infrastructure.category.models.CategoryResponse;
-import com.codeflix.admin.video.catalog.infrastructure.category.models.CreateCategoryRequest;
+import com.codeflix.admin.video.catalog.e2e.MockDsl;
 import com.codeflix.admin.video.catalog.infrastructure.category.models.UpdateCategoryRequest;
 import com.codeflix.admin.video.catalog.infrastructure.category.persistence.CategoryRepository;
 import com.codeflix.admin.video.catalog.infrastructure.configuration.json.Json;
@@ -29,13 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @E2ETest
 @Testcontainers
-public class CategoryE2ETest {
+public class CategoryE2ETest implements MockDsl {
 
 	@Autowired
 	private MockMvc mvc;
 
 	@Autowired
 	private CategoryRepository repository;
+
+	@Override
+	public MockMvc mvc() {
+		return this.mvc;
+	}
 
 	@Container
 	private static final MySQLContainer MYSQL_CONTAINER =
@@ -279,38 +283,5 @@ public class CategoryE2ETest {
 
 		return this.mvc.perform(aRequest);
 
-	}
-
-	private CategoryID givenACategory(
-			final String aName,
-			final String aDescription,
-			final boolean isActive
-	) throws Exception {
-		final var aRequestBody = new CreateCategoryRequest(aName, aDescription, isActive);
-
-		final var aRequest = MockMvcRequestBuilders.post("/categories")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(Json.writeValueAsString(aRequestBody));
-
-		final var actualId = this.mvc.perform(aRequest)
-				.andExpect(status().isCreated())
-				.andReturn()
-				.getResponse().getHeader("Location")
-				.replace("/categories/", "");
-
-		return CategoryID.from(actualId);
-	}
-
-	private CategoryResponse retrieveACategory(final String anId) throws Exception {
-		final var aRequest = get("/categories/" + anId)
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON);
-
-		final var json = this.mvc.perform(aRequest)
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse().getContentAsString();
-
-		return Json.readValue(json, CategoryResponse.class);
 	}
 }
