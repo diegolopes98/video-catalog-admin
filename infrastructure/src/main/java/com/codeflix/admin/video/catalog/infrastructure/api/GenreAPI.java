@@ -38,7 +38,9 @@ public interface GenreAPI {
     })
     ResponseEntity<?> create(@RequestBody CreateGenreRequest input);
 
-    @GetMapping
+    @GetMapping(
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     @Operation(summary = "List all genres paginated")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Listed successfully"),
