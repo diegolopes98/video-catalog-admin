@@ -1,6 +1,7 @@
 package com.codeflix.admin.video.catalog.application.castmember.update;
 
 
+import com.codeflix.admin.video.catalog.application.Fixture;
 import com.codeflix.admin.video.catalog.application.UseCaseTest;
 import com.codeflix.admin.video.catalog.domain.castmember.CastMember;
 import com.codeflix.admin.video.catalog.domain.castmember.CastMemberGateway;
@@ -44,8 +45,8 @@ public class UpdateCastMemberUseCaseTest extends UseCaseTest {
         final var aMember = CastMember.newMember("vin diesel", CastMemberType.DIRECTOR);
 
         final var expectedId = aMember.getId();
-        final var expectedName = "Vin Diesel";
-        final var expectedType = CastMemberType.ACTOR;
+        final var expectedName = Fixture.name();
+        final var expectedType = Fixture.CastMembers.type();
 
         final var aCommand = UpdateCastMemberCommand.with(
                 expectedId.getValue(),
@@ -54,7 +55,7 @@ public class UpdateCastMemberUseCaseTest extends UseCaseTest {
         );
 
         when(castMemberGateway.findById(any()))
-                .thenReturn(Optional.of(CastMember.with(aMember)));
+                .thenReturn(Optional.of(CastMember.from(aMember)));
 
         when(castMemberGateway.update(any()))
                 .thenAnswer(returnsFirstArg());
@@ -84,7 +85,7 @@ public class UpdateCastMemberUseCaseTest extends UseCaseTest {
 
         final var expectedId = aMember.getId();
         final String expectedName = null;
-        final var expectedType = CastMemberType.ACTOR;
+        final var expectedType = Fixture.CastMembers.type();
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'name' should not be null";
@@ -119,7 +120,7 @@ public class UpdateCastMemberUseCaseTest extends UseCaseTest {
         final var aMember = CastMember.newMember("vin diesel", CastMemberType.DIRECTOR);
 
         final var expectedId = aMember.getId();
-        final var expectedName = "Vin Diesel";
+        final var expectedName = Fixture.name();
         final CastMemberType expectedType = null;
 
         final var expectedErrorCount = 1;
@@ -155,8 +156,8 @@ public class UpdateCastMemberUseCaseTest extends UseCaseTest {
         final var aMember = CastMember.newMember("vin diesel", CastMemberType.DIRECTOR);
 
         final var expectedId = CastMemberID.from("123");
-        final var expectedName = "Vin Diesel";
-        final var expectedType = CastMemberType.ACTOR;
+        final var expectedName = Fixture.name();
+        final var expectedType =  Fixture.CastMembers.type();
 
         final var expectedErrorMessage = "CastMember with ID 123 was not found";
 

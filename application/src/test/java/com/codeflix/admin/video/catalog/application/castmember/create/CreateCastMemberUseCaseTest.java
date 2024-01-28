@@ -1,6 +1,6 @@
 package com.codeflix.admin.video.catalog.application.castmember.create;
 
-
+import com.codeflix.admin.video.catalog.application.Fixture;
 import com.codeflix.admin.video.catalog.application.UseCaseTest;
 import com.codeflix.admin.video.catalog.domain.castmember.CastMemberGateway;
 import com.codeflix.admin.video.catalog.domain.castmember.CastMemberType;
@@ -36,8 +36,8 @@ public class CreateCastMemberUseCaseTest extends UseCaseTest {
     @Test
     public void givenAValidCommand_whenCallsCreateCastMember_shouldReturnIt() {
         // given
-        final var expectedName = "Vin Diesel";
-        final var expectedType = CastMemberType.ACTOR;
+        final var expectedName = Fixture.name();
+        final var expectedType = Fixture.CastMembers.type();
 
         final var aCommand = CreateCastMemberCommand.with(expectedName, expectedType);
 
@@ -64,7 +64,7 @@ public class CreateCastMemberUseCaseTest extends UseCaseTest {
     public void givenAInvalidName_whenCallsCreateCastMember_shouldThrowsNotificationException() {
         // given
         final String expectedName = null;
-        final var expectedType = CastMemberType.ACTOR;
+        final var expectedType = Fixture.CastMembers.type();
 
         final var expectedErrorCount = 1;
         final var expectedErrorMessage = "'name' should not be null";
@@ -87,7 +87,7 @@ public class CreateCastMemberUseCaseTest extends UseCaseTest {
     @Test
     public void givenAInvalidType_whenCallsCreateCastMember_shouldThrowsNotificationException() {
         // given
-        final var expectedName = "Vin Diesel";
+        final var expectedName =  Fixture.name();
         final CastMemberType expectedType = null;
 
         final var expectedErrorCount = 1;

@@ -46,7 +46,7 @@ public class CastMember extends AggregateRoot<CastMemberID> {
         return new CastMember(anId, aName, aType, aCreationDate, aUpdateDate);
     }
 
-    public static CastMember with(final CastMember aMember) {
+    public static CastMember from(final CastMember aMember) {
         return new CastMember(
                 aMember.id,
                 aMember.name,
