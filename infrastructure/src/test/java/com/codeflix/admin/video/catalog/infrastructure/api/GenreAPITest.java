@@ -3,11 +3,16 @@ package com.codeflix.admin.video.catalog.infrastructure.api;
 import com.codeflix.admin.video.catalog.ControllerTest;
 import com.codeflix.admin.video.catalog.application.genre.create.CreateGenreOutput;
 import com.codeflix.admin.video.catalog.application.genre.create.CreateGenreUseCase;
+import com.codeflix.admin.video.catalog.application.genre.create.DefaultCreateGenreUseCase;
+import com.codeflix.admin.video.catalog.application.genre.delete.DefaultDeleteGenreUseCase;
 import com.codeflix.admin.video.catalog.application.genre.delete.DeleteGenreUseCase;
+import com.codeflix.admin.video.catalog.application.genre.retrieve.get.DefaultGetGenreByIdUseCase;
 import com.codeflix.admin.video.catalog.application.genre.retrieve.get.GenreOutput;
 import com.codeflix.admin.video.catalog.application.genre.retrieve.get.GetGenreByIdUseCase;
+import com.codeflix.admin.video.catalog.application.genre.retrieve.list.DefaultListGenreUseCase;
 import com.codeflix.admin.video.catalog.application.genre.retrieve.list.GenreListOutput;
 import com.codeflix.admin.video.catalog.application.genre.retrieve.list.ListGenreUseCase;
+import com.codeflix.admin.video.catalog.application.genre.update.DefaultUpdateGenreUseCase;
 import com.codeflix.admin.video.catalog.application.genre.update.UpdateGenreOutput;
 import com.codeflix.admin.video.catalog.application.genre.update.UpdateGenreUseCase;
 import com.codeflix.admin.video.catalog.domain.category.CategoryID;
@@ -57,19 +62,19 @@ public class GenreAPITest {
     private ObjectMapper mapper;
 
     @MockBean
-    private CreateGenreUseCase createGenreUseCase;
+    private DefaultCreateGenreUseCase createGenreUseCase;
 
     @MockBean
-    private GetGenreByIdUseCase getGenreByIdUseCase;
+    private DefaultGetGenreByIdUseCase getGenreByIdUseCase;
 
     @MockBean
-    private UpdateGenreUseCase updateGenreUseCase;
+    private DefaultUpdateGenreUseCase updateGenreUseCase;
 
     @MockBean
-    private DeleteGenreUseCase deleteGenreUseCase;
+    private DefaultDeleteGenreUseCase deleteGenreUseCase;
 
     @MockBean
-    private ListGenreUseCase listGenreUseCase;
+    private DefaultListGenreUseCase listGenreUseCase;
 
     @Test
     public void givenAValidCommand_whenCallsCreateGenre_thenShouldReturnGenreId() throws Exception {

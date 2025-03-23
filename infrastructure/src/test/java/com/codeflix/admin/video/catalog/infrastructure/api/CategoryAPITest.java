@@ -3,11 +3,16 @@ package com.codeflix.admin.video.catalog.infrastructure.api;
 import com.codeflix.admin.video.catalog.ControllerTest;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.create.CreateCategoryUseCase;
+import com.codeflix.admin.video.catalog.application.category.create.DefaultCreateCategoryUseCase;
+import com.codeflix.admin.video.catalog.application.category.delete.DefaultDeleteCategoryUseCase;
 import com.codeflix.admin.video.catalog.application.category.delete.DeleteCategoryUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.CategoryOutput;
+import com.codeflix.admin.video.catalog.application.category.retrieve.get.DefaultGetCategoryByIdUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.get.GetCategoryByIdUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.list.CategoryListOutput;
+import com.codeflix.admin.video.catalog.application.category.retrieve.list.DefaultListCategoriesUseCase;
 import com.codeflix.admin.video.catalog.application.category.retrieve.list.ListCategoriesUseCase;
+import com.codeflix.admin.video.catalog.application.category.update.DefaultUpdateCategoryUseCase;
 import com.codeflix.admin.video.catalog.application.category.update.UpdateCategoryOutput;
 import com.codeflix.admin.video.catalog.application.category.update.UpdateCategoryUseCase;
 import com.codeflix.admin.video.catalog.domain.category.Category;
@@ -47,19 +52,19 @@ public class CategoryAPITest {
 	private ObjectMapper mapper;
 
 	@MockBean
-	private CreateCategoryUseCase createCategoryUseCase;
+	private DefaultCreateCategoryUseCase createCategoryUseCase;
 
 	@MockBean
-	private GetCategoryByIdUseCase getCategoryByIdUseCase;
+	private DefaultGetCategoryByIdUseCase getCategoryByIdUseCase;
 
 	@MockBean
-	private UpdateCategoryUseCase updateCategoryUseCase;
+	private DefaultUpdateCategoryUseCase updateCategoryUseCase;
 
 	@MockBean
-	private DeleteCategoryUseCase deleteCategoryUseCase;
+	private DefaultDeleteCategoryUseCase deleteCategoryUseCase;
 
 	@MockBean
-	private ListCategoriesUseCase listCategoriesUseCase;
+	private DefaultListCategoriesUseCase listCategoriesUseCase;
 
 	@Test
 	public void givenAValidCommand_whenCallsCreateCategory_thenShouldReturnCategoryId() throws Exception {
