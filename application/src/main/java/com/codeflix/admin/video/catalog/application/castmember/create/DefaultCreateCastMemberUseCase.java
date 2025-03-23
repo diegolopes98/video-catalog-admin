@@ -5,7 +5,7 @@ import com.codeflix.admin.video.catalog.domain.castmember.CastMemberGateway;
 
 import java.util.Objects;
 
-public non-sealed class DefaultCreateCastMemberUseCase extends CreateCastMemberUseCase {
+public non-sealed class DefaultCreateCastMemberUseCase implements CreateCastMemberUseCase {
 
     private final CastMemberGateway castMemberGateway;
 

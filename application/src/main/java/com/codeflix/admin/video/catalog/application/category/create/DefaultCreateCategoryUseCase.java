@@ -5,7 +5,7 @@ import com.codeflix.admin.video.catalog.domain.category.CategoryGateway;
 
 import java.util.Objects;
 
-public class DefaultCreateCategoryUseCase extends CreateCategoryUseCase {
+public non-sealed class DefaultCreateCategoryUseCase implements CreateCategoryUseCase {
 
     private final CategoryGateway categoryGateway;
 

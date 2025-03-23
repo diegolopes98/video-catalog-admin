@@ -6,7 +6,7 @@ import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
 
 import java.util.Objects;
 
-public class DefaultListCategoriesUseCase extends ListCategoriesUseCase {
+public non-sealed class DefaultListCategoriesUseCase implements ListCategoriesUseCase {
 
 	private final CategoryGateway categoryGateway;
 

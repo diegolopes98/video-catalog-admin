@@ -6,7 +6,7 @@ import com.codeflix.admin.video.catalog.domain.pagination.SearchQuery;
 
 import java.util.Objects;
 
-public class DefaultListGenreUseCase extends ListGenreUseCase {
+public non-sealed class DefaultListGenreUseCase implements ListGenreUseCase {
 
     private final GenreGateway genreGateway;
 

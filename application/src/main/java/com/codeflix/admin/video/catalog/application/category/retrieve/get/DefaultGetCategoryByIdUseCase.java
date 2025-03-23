@@ -10,7 +10,7 @@ import com.codeflix.admin.video.catalog.domain.validation.Error;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DefaultGetCategoryByIdUseCase extends GetCategoryByIdUseCase {
+public non-sealed class DefaultGetCategoryByIdUseCase implements GetCategoryByIdUseCase {
 
 	private final CategoryGateway categoryGateway;
 

@@ -6,7 +6,7 @@ import com.codeflix.admin.video.catalog.domain.pagination.SearchQuery;
 
 import java.util.Objects;
 
-public non-sealed class DefaultListCastMembersUseCase extends ListCastMembersUseCase {
+public non-sealed class DefaultListCastMembersUseCase implements ListCastMembersUseCase {
 
     private final CastMemberGateway castMemberGateway;
 

@@ -4,5 +4,6 @@ import com.codeflix.admin.video.catalog.application.UseCase;
 import com.codeflix.admin.video.catalog.domain.pagination.SearchQuery;
 import com.codeflix.admin.video.catalog.domain.pagination.Pagination;
 
-public abstract class ListCategoriesUseCase extends UseCase<SearchQuery, Pagination<CategoryListOutput>> {
-}
+public sealed interface ListCategoriesUseCase
+        extends UseCase<SearchQuery, Pagination<CategoryListOutput>>
+        permits DefaultListCategoriesUseCase { }

@@ -5,7 +5,7 @@ import com.codeflix.admin.video.catalog.domain.genre.GenreID;
 
 import java.util.Objects;
 
-public class DefaultDeleteGenreUseCase extends DeleteGenreUseCase {
+public non-sealed class DefaultDeleteGenreUseCase implements DeleteGenreUseCase {
 
     private final GenreGateway genreGateway;
 

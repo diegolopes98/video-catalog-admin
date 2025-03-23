@@ -8,7 +8,7 @@ import com.codeflix.admin.video.catalog.domain.genre.GenreID;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public class DefaultGetGenreByIdUseCase extends GetGenreByIdUseCase {
+public non-sealed class DefaultGetGenreByIdUseCase implements GetGenreByIdUseCase {
 
     private final GenreGateway genreGateway;
 

@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class DefaultUpdateGenreUseCase extends UpdateGenreUseCase {
+public non-sealed class DefaultUpdateGenreUseCase implements UpdateGenreUseCase {
 
     private final CategoryGateway categoryGateway;
     private final GenreGateway genreGateway;

@@ -5,7 +5,7 @@ import com.codeflix.admin.video.catalog.domain.category.CategoryID;
 
 import java.util.Objects;
 
-public class DefaultDeleteCategoryUseCase extends DeleteCategoryUseCase {
+public non-sealed class DefaultDeleteCategoryUseCase implements DeleteCategoryUseCase {
 
 	private final CategoryGateway categoryGateway;
 

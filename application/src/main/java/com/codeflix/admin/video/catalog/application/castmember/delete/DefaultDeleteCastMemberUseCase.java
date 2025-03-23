@@ -5,7 +5,7 @@ import com.codeflix.admin.video.catalog.domain.castmember.CastMemberID;
 
 import java.util.Objects;
 
-public non-sealed class DefaultDeleteCastMemberUseCase extends DeleteCastMemberUseCase {
+public non-sealed class DefaultDeleteCastMemberUseCase implements DeleteCastMemberUseCase {
 
     private final CastMemberGateway castMemberGateway;
 

@@ -9,9 +9,9 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 
-public class DefaultUpdateCategoryUseCase extends UpdateCategoryUseCase {
+public non-sealed class DefaultUpdateCategoryUseCase implements UpdateCategoryUseCase {
 
-    private CategoryGateway categoryGateway;
+    private final CategoryGateway categoryGateway;
 
     public DefaultUpdateCategoryUseCase(final CategoryGateway categoryGateway) {
         Objects.requireNonNull(categoryGateway);

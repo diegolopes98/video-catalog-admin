@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class DefaultCreateGenreUseCase extends CreateGenreUseCase {
+public non-sealed class DefaultCreateGenreUseCase implements CreateGenreUseCase {
 
     private final GenreGateway genreGateway;
     private final CategoryGateway categoryGateway;
